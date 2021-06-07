@@ -30,7 +30,6 @@ PREDEFINED_SPARK_SESSIONS = {
     "yarn-regular": {
         "master": "yarn",
         "config": {
-            "spark.driver.memory": "2g",
             "spark.dynamicAllocation.maxExecutors": 64,
             "spark.executor.memory": "8g",
             "spark.executor.cores": 4,
@@ -40,7 +39,6 @@ PREDEFINED_SPARK_SESSIONS = {
     "yarn-large": {
         "master": "yarn",
         "config": {
-            "spark.driver.memory": "4g",
             "spark.dynamicAllocation.maxExecutors": 128,
             "spark.executor.memory": "8g",
             "spark.executor.cores": 4,
