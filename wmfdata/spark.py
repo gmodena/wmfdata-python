@@ -62,6 +62,22 @@ ENV_VARS_TO_PROPAGATE = [
     'no_proxy',
 ]
 
+def from_spark_submit(args=None):
+    """
+    Initialise a SparkSession from the PYSPARK_SUBMIT_ARGS environment variable.
+
+    This init method short-circuits `wmfdata` default settings and allows a cluster topology
+    and configures a custom pyspark-shell. This is useful, for instance, when we want to set spark-submit
+    parameters before the JVM startup.
+
+    This init method is all-or-nothing. When a session is initialised with this method, it is expected
+    that the full Spark configuration is specified in PYSPARK_SUBMIT_ARGS (either by setting cli options, or in properties file).
+    """
+    findspark.init(SPARK_HOME)
+    from pyspark.sql import SparkSession
+    findspark._add_to_submit_args(submit_args)
+    return SparkSession.builder.getOrCreate()
+
 def get_custom_session(
     master="local[2]",
     app_name="wmfdata-custom",
@@ -210,12 +226,18 @@ def get_session(
     # Add in any extra settings, overwriting if applicable
     config.update(extra_settings)
 
-    return get_custom_session(
+    submit_args = os.environ.get('PYSPARK_SUBMIT_ARGS')
+    session = None
+    if submit_args:
+        session = from_spark_submit(submit_args)
+    else:
+        session = get_custom_session(
         master=PREDEFINED_SPARK_SESSIONS[type]["master"],
         app_name=app_name,
         spark_config=config,
         ship_python_env=ship_python_env
     )
+    return session
 
 
 def get_application_id(session):
