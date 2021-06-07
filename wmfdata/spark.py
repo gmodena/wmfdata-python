@@ -75,7 +75,7 @@ def from_spark_submit(args=None):
     """
     findspark.init(SPARK_HOME)
     from pyspark.sql import SparkSession
-    findspark._add_to_submit_args(submit_args)
+    findspark._add_to_submit_args(args)
     return SparkSession.builder.getOrCreate()
 
 def get_custom_session(
